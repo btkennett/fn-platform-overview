@@ -37,15 +37,6 @@ function FadeIn({ children, className = "" }: { children: React.ReactNode; class
   return <div ref={ref} className={`fade-in ${className}`}>{children}</div>;
 }
 
-const NAV_LINKS = [
-  { href: "#the-stack", label: "The Stack" },
-  { href: "#compass", label: "Compass" },
-  { href: "#flux", label: "Flux" },
-  { href: "#forge", label: "Forge" },
-  { href: "#docs", label: "Docs" },
-  { href: "#why-it-matters", label: "Why It Matters" },
-];
-
 const APP_LINKS = {
   compass: "https://foundrycompass.com",
   flux: "https://foundrynorthflux.com",
@@ -439,14 +430,14 @@ export default function PlatformOverviewPage() {
 
   return (
     <>
-      {/* ─── Sticky Nav (SuiteBar style) ─────────── */}
+      {/* ─── SuiteBar ─────────────────────────────── */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-b border-border supports-[backdrop-filter]:bg-background/80">
         {/* Scroll progress bar */}
         <div
           className="absolute top-0 left-0 h-[2px] bg-gradient-to-r from-primary to-primary/60 transition-none"
           style={{ width: `${scrollProgress * 100}%` }}
         />
-        <div className="flex items-center justify-between gap-3 px-2 py-2 sm:px-4 max-w-[90rem] mx-auto">
+        <div className="flex items-center justify-between gap-3 px-2 py-2 sm:px-4">
           {/* Left: Logo & Branding */}
           <div className="flex items-center gap-2 min-w-0 shrink-0">
             <img
@@ -454,26 +445,70 @@ export default function PlatformOverviewPage() {
               alt="Foundry North"
               className="h-6 w-auto brightness-0 invert"
             />
-            <span className="hidden sm:inline text-white font-semibold text-sm tracking-wide">
+            <div className="hidden lg:flex flex-col leading-tight">
+              <span className="text-white font-semibold text-sm tracking-wide">FOUNDRY NORTH</span>
+              <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Suite</span>
+            </div>
+            <span className="text-white font-semibold text-sm tracking-wide lg:hidden hidden sm:inline">
               FOUNDRY NORTH
             </span>
           </div>
 
-          {/* Center: Section Nav Pills */}
-          <div className="flex items-center gap-1 overflow-x-auto rounded-xl border border-white/[0.08] bg-card/40 p-1">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="inline-flex items-center rounded-md border border-transparent px-2.5 py-1.5 text-xs sm:text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.06] hover:border-white/[0.08] transition-colors whitespace-nowrap no-underline"
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
+          {/* Center: App Navigation Pills */}
+          <nav aria-label="Foundry Suite apps" className="flex items-center gap-1 overflow-x-auto rounded-xl border border-white/[0.08] bg-card/40 p-1">
+            <span className="hidden lg:inline-block text-[10px] uppercase tracking-wider text-muted-foreground px-1.5">Suite</span>
+            <a
+              href={APP_LINKS.compass}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-md border border-transparent px-2.5 py-1.5 transition-colors whitespace-nowrap text-muted-foreground hover:text-foreground hover:bg-white/[0.06] hover:border-white/[0.08] no-underline"
+            >
+              <span className="text-base">🧭</span>
+              <span className="leading-tight">
+                <span className="block text-xs sm:text-sm font-medium">Compass</span>
+                <span className="hidden 2xl:block text-[10px] text-muted-foreground">Media planning</span>
+              </span>
+            </a>
+            <a
+              href={APP_LINKS.flux}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-md border border-transparent px-2.5 py-1.5 transition-colors whitespace-nowrap text-muted-foreground hover:text-foreground hover:bg-white/[0.06] hover:border-white/[0.08] no-underline"
+            >
+              <span className="text-base">⚡</span>
+              <span className="leading-tight">
+                <span className="block text-xs sm:text-sm font-medium">Flux</span>
+                <span className="hidden 2xl:block text-[10px] text-muted-foreground">Orchestration</span>
+              </span>
+            </a>
+            <a
+              href={APP_LINKS.forge}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-md border border-transparent px-2.5 py-1.5 transition-colors whitespace-nowrap text-muted-foreground hover:text-foreground hover:bg-white/[0.06] hover:border-white/[0.08] no-underline"
+            >
+              <span className="text-base">🛡️</span>
+              <span className="leading-tight">
+                <span className="block text-xs sm:text-sm font-medium">Forge</span>
+                <span className="hidden 2xl:block text-[10px] text-muted-foreground">Compliance</span>
+              </span>
+            </a>
+            <a
+              href={APP_LINKS.docs}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-md border border-transparent px-2.5 py-1.5 transition-colors whitespace-nowrap text-muted-foreground hover:text-foreground hover:bg-white/[0.06] hover:border-white/[0.08] no-underline"
+            >
+              <span className="text-base">📄</span>
+              <span className="leading-tight">
+                <span className="block text-xs sm:text-sm font-medium">Doc Center</span>
+                <span className="hidden 2xl:block text-[10px] text-muted-foreground">Resources</span>
+              </span>
+            </a>
+          </nav>
 
           {/* Right: spacer for balance */}
-          <div className="hidden sm:block w-[140px] shrink-0" />
+          <div className="hidden sm:block w-[160px] shrink-0" />
         </div>
       </nav>
 
@@ -484,13 +519,14 @@ export default function PlatformOverviewPage() {
           <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/10 blur-[120px] rounded-full" />
           <div className="section-container relative">
             <div className="max-w-3xl">
+              <p className="text-sm font-medium text-primary uppercase tracking-widest mb-4">The Foundry Suite</p>
               <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight mb-6">
                 The platform behind Star Tribune&apos;s most powerful media operation
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-8">
                 HubSpot handles your CRM. NinjaCat handles reporting.{" "}
                 <span className="gradient-text font-semibold">
-                  Foundry North handles everything in between
+                  The Foundry Suite handles everything in between
                 </span>{" "}
                 — and makes them both better.
               </p>
@@ -532,10 +568,10 @@ export default function PlatformOverviewPage() {
                 </p>
               </div>
 
-              {/* Foundry North column — 4 app cards */}
+              {/* Foundry Suite column — 4 app cards */}
               <div className="space-y-3">
                 <div className="text-center mb-4">
-                  <h3 className="text-lg font-semibold text-primary">Foundry North</h3>
+                  <h3 className="text-lg font-semibold text-primary">The Foundry Suite</h3>
                   <p className="text-xs text-muted-foreground m-0">4 integrated applications</p>
                 </div>
                 {[
@@ -576,7 +612,7 @@ export default function PlatformOverviewPage() {
             <div className="flex items-center justify-center gap-4 mt-8 text-muted-foreground">
               <span className="text-sm">HubSpot</span>
               <span className="text-primary">⟵ syncs ⟶</span>
-              <span className="text-sm font-medium text-primary">Foundry North</span>
+              <span className="text-sm font-medium text-primary">Foundry Suite</span>
               <span className="text-primary">⟵ context ⟶</span>
               <span className="text-sm">NinjaCat</span>
             </div>
@@ -724,9 +760,9 @@ export default function PlatformOverviewPage() {
                   className="h-8 w-auto brightness-0 invert"
                 />
                 <div>
-                  <span className="text-sm font-semibold text-foreground">Built by Foundry North</span>
+                  <span className="text-sm font-semibold text-foreground">The Foundry Suite</span>
                   <p className="text-xs text-muted-foreground mt-1 mb-0">
-                    The platform behind Star Tribune&apos;s media operation.
+                    Built by Foundry North for Star Tribune.
                   </p>
                 </div>
               </div>
