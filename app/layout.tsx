@@ -1,10 +1,13 @@
-import type { Metadata } from 'next';
-import './globals.css';
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: 'Platform Overview | Foundry North',
+  title: "Foundry North — Platform Overview",
   description:
-    'What Compass, Flux, Forge, and the Star Tribune Document Center do — and how they work with HubSpot and NinjaCat.',
+    "How Compass, Flux, Forge, and the Document Center amplify HubSpot and NinjaCat into Star Tribune's most powerful media operation.",
 };
 
 export default function RootLayout({
@@ -13,8 +16,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className={`dark ${inter.variable}`}>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }
