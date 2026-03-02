@@ -490,7 +490,7 @@ export default function PlatformOverviewPage() {
               <span className="text-base">🛡️</span>
               <span className="leading-tight">
                 <span className="block text-xs sm:text-sm font-medium">Forge</span>
-                <span className="hidden 2xl:block text-[10px] text-muted-foreground">Compliance</span>
+                <span className="hidden 2xl:block text-[10px] text-muted-foreground">Creative Hub</span>
               </span>
             </a>
             <a
@@ -521,7 +521,7 @@ export default function PlatformOverviewPage() {
             <div className="max-w-3xl">
               <p className="text-sm font-medium text-primary uppercase tracking-widest mb-4">The Foundry Suite</p>
               <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight mb-6">
-                The platform behind Star Tribune&apos;s most powerful media operation
+                The platform behind Star Tribune&apos;s best-in-class media operation
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-8">
                 HubSpot handles your CRM. NinjaCat handles reporting.{" "}
