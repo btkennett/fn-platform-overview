@@ -1,6 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+
+/* ─── Scroll Progress Hook ──────────────────── */
+function useScrollProgress() {
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    const onScroll = () => {
+      const h = document.documentElement;
+      setProgress(h.scrollTop / (h.scrollHeight - h.clientHeight));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return progress;
+}
+
+/* ─── Fade-in on Scroll Hook ────────────────── */
+function useFadeIn() {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { el.classList.add("fade-in-visible"); obs.unobserve(el); } },
+      { threshold: 0.1 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return ref;
+}
+
+function FadeIn({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const ref = useFadeIn();
+  return <div ref={ref} className={`fade-in ${className}`}>{children}</div>;
+}
 
 const NAV_LINKS = [
   { href: "#the-stack", label: "The Stack" },
@@ -104,7 +139,7 @@ function AppSection({
 }) {
   return (
     <section id={id} className="py-20 border-t border-border">
-      <div className="section-container">
+      <FadeIn className="section-container">
         <div className="mb-10">
           <h2 className="text-3xl font-bold text-foreground mb-2">{name}</h2>
           <p className="text-xl text-primary font-medium mb-4">{tagline}</p>
@@ -120,11 +155,11 @@ function AppSection({
           href={appUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-primary/10 border border-primary/30 rounded-lg text-primary font-medium hover:bg-primary/20 hover:border-primary/50 transition-all no-underline"
+          className="cta-shimmer inline-flex items-center gap-2 px-6 py-3 bg-primary/10 border border-primary/30 rounded-lg text-primary font-medium hover:bg-primary/20 hover:border-primary/50 transition-all no-underline"
         >
           Open {name} <span aria-hidden>→</span>
         </a>
-      </div>
+      </FadeIn>
     </section>
   );
 }
@@ -400,32 +435,45 @@ const DOCS_FEATURES: { icon: string; title: string; description: string; details
 
 /* ═══ PAGE ═══════════════════════════════════════ */
 export default function PlatformOverviewPage() {
+  const scrollProgress = useScrollProgress();
+
   return (
     <>
-      {/* ─── Sticky Nav ─────────────────────────── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/60 backdrop-blur-xl border-b border-white/[0.06]">
-        <div className="section-container flex items-center justify-between h-14">
-          <div className="flex items-center gap-2">
+      {/* ─── Sticky Nav (SuiteBar style) ─────────── */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-b border-border supports-[backdrop-filter]:bg-background/80">
+        {/* Scroll progress bar */}
+        <div
+          className="absolute top-0 left-0 h-[2px] bg-gradient-to-r from-primary to-primary/60 transition-none"
+          style={{ width: `${scrollProgress * 100}%` }}
+        />
+        <div className="flex items-center justify-between gap-3 px-2 py-2 sm:px-4 max-w-[90rem] mx-auto">
+          {/* Left: Logo & Branding */}
+          <div className="flex items-center gap-2 min-w-0 shrink-0">
             <img
               src="/foundry-north-logo.png"
               alt="Foundry North"
-              className="h-7 w-auto brightness-0 invert"
+              className="h-6 w-auto brightness-0 invert"
             />
-            <span className="text-sm font-semibold tracking-tight text-foreground">
-              Foundry North
+            <span className="hidden sm:inline text-white font-semibold text-sm tracking-wide">
+              FOUNDRY NORTH
             </span>
           </div>
-          <div className="hidden md:flex items-center gap-6">
+
+          {/* Center: Section Nav Pills */}
+          <div className="flex items-center gap-1 overflow-x-auto rounded-xl border border-white/[0.08] bg-card/40 p-1">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors no-underline"
+                className="inline-flex items-center rounded-md border border-transparent px-2.5 py-1.5 text-xs sm:text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.06] hover:border-white/[0.08] transition-colors whitespace-nowrap no-underline"
               >
                 {link.label}
               </a>
             ))}
           </div>
+
+          {/* Right: spacer for balance */}
+          <div className="hidden sm:block w-[140px] shrink-0" />
         </div>
       </nav>
 
@@ -436,29 +484,39 @@ export default function PlatformOverviewPage() {
           <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/10 blur-[120px] rounded-full" />
           <div className="section-container relative">
             <div className="max-w-3xl">
-              <img
-                src="/foundry-north-logo.png"
-                alt=""
-                className="h-12 w-auto brightness-0 invert mb-6"
-              />
               <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight mb-6">
                 The platform behind Star Tribune&apos;s most powerful media operation
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-8">
                 HubSpot handles your CRM. NinjaCat handles reporting.{" "}
-                <span className="text-foreground font-medium">
+                <span className="gradient-text font-semibold">
                   Foundry North handles everything in between
                 </span>{" "}
                 — and makes them both better.
               </p>
-              <div className="h-1 w-24 bg-gradient-to-r from-primary to-primary/0 rounded-full" />
+              <div className="h-1 w-24 bg-gradient-to-r from-primary to-primary/0 rounded-full mb-10" />
+
+              {/* Quick stats */}
+              <div className="flex flex-wrap gap-3">
+                {[
+                  { value: "146+", label: "DB tables" },
+                  { value: "64", label: "async tasks" },
+                  { value: "6", label: "AI models" },
+                  { value: "4", label: "apps, one login" },
+                ].map((stat) => (
+                  <div key={stat.label} className="flex items-baseline gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06]">
+                    <span className="text-sm font-bold text-primary">{stat.value}</span>
+                    <span className="text-xs text-muted-foreground">{stat.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
         {/* ─── The Stack ──────────────────────────── */}
         <section id="the-stack" className="py-20 border-t border-border">
-          <div className="section-container">
+          <FadeIn className="section-container">
             <h2 className="text-3xl font-bold text-foreground mb-3">The Stack</h2>
             <p className="text-muted-foreground mb-10 max-w-2xl">
               One login. Four apps. Complete coverage from planning to compliance.
@@ -522,12 +580,12 @@ export default function PlatformOverviewPage() {
               <span className="text-primary">⟵ context ⟶</span>
               <span className="text-sm">NinjaCat</span>
             </div>
-          </div>
+          </FadeIn>
         </section>
 
         {/* ─── Why It Matters (Value Pillars) ─────── */}
         <section id="why-it-matters" className="py-20 border-t border-border">
-          <div className="section-container">
+          <FadeIn className="section-container">
             <h2 className="text-3xl font-bold text-foreground mb-3">Why This Matters</h2>
             <p className="text-muted-foreground mb-10 max-w-2xl">
               Four capabilities that compound when they work together.
@@ -550,7 +608,7 @@ export default function PlatformOverviewPage() {
                 description="Policy-based creative review, audit trails, affidavits, incident management. Built in from day one, not bolted on after the fact."
               />
             </div>
-          </div>
+          </FadeIn>
         </section>
 
         {/* ─── Compass ────────────────────────────── */}
@@ -624,7 +682,7 @@ export default function PlatformOverviewPage() {
 
         {/* ─── How It All Connects ────────────────── */}
         <section id="how-it-connects" className="py-20 border-t border-border">
-          <div className="section-container">
+          <FadeIn className="section-container">
             <h2 className="text-3xl font-bold text-foreground mb-3">How It All Connects</h2>
             <p className="text-muted-foreground mb-8 max-w-2xl">
               Data flows automatically between apps so nothing falls through the cracks. HubSpot remains the system of record.
@@ -652,7 +710,7 @@ export default function PlatformOverviewPage() {
                 description="Deals, contacts, companies, and fulfillment tickets stay synchronized. HubSpot is always the source of truth for CRM."
               />
             </div>
-          </div>
+          </FadeIn>
         </section>
 
         {/* ─── Footer ─────────────────────────────── */}
