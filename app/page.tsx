@@ -76,7 +76,8 @@ function FeatureCard({
 function ValueCard({ title, description }: { title: string; description: string }) {
   return (
     <div className="card-base card-hover relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary/80 to-primary/0" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-primary/60 via-primary/30 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none rounded-xl" />
       <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
       <p className="text-sm text-muted-foreground leading-relaxed m-0">{description}</p>
     </div>
@@ -402,7 +403,7 @@ export default function PlatformOverviewPage() {
   return (
     <>
       {/* ─── Sticky Nav ─────────────────────────── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/60 backdrop-blur-xl border-b border-white/[0.06]">
         <div className="section-container flex items-center justify-between h-14">
           <div className="flex items-center gap-2">
             <img

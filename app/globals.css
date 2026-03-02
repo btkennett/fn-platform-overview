@@ -20,9 +20,9 @@
 
 /* ─── Base Styles ─── */
 :root {
-  --glow-sm: 0 0 20px rgba(255, 153, 0, 0.15);
-  --glow-md: 0 0 40px rgba(255, 153, 0, 0.2);
-  --glow-lg: 0 0 60px rgba(255, 153, 0, 0.25);
+  --glow-sm: 0 0 20px rgba(255, 153, 0, 0.12), 0 0 4px rgba(255, 153, 0, 0.08);
+  --glow-md: 0 0 40px rgba(255, 153, 0, 0.18), 0 0 8px rgba(255, 153, 0, 0.1);
+  --glow-lg: 0 0 60px rgba(255, 153, 0, 0.22), 0 0 12px rgba(255, 153, 0, 0.12);
 }
 
 html {
@@ -38,6 +38,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ─── Subtle dot grid on body ─── */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, hsl(215 14% 22%) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.3;
+}
+
 /* ─── Component Classes ─── */
 @utility section-container {
   max-width: 72rem;
@@ -48,23 +60,41 @@ body {
 }
 
 @utility card-base {
-  background-color: var(--color-card);
-  border: 1px solid var(--color-card-border);
-  border-radius: 0.5rem;
+  background: linear-gradient(
+    135deg,
+    hsla(215, 16%, 13%, 0.8),
+    hsla(215, 16%, 10%, 0.6)
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid hsla(215, 14%, 24%, 0.5);
+  border-radius: 0.75rem;
   padding: 1.5rem;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 @utility card-hover {
   &:hover {
-    border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+    border-color: hsla(36, 88%, 52%, 0.3);
     box-shadow: var(--glow-sm);
+    background: linear-gradient(
+      135deg,
+      hsla(215, 16%, 15%, 0.85),
+      hsla(215, 16%, 11%, 0.7)
+    );
+    transform: translateY(-1px);
   }
 }
 
 @utility sentinel-glow {
-  border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+  border-color: hsla(36, 88%, 52%, 0.35);
   box-shadow: var(--glow-md);
+  background: linear-gradient(
+    135deg,
+    hsla(36, 30%, 12%, 0.5),
+    hsla(215, 16%, 10%, 0.6)
+  );
 }
 
 @utility no-underline {
@@ -84,4 +114,15 @@ body {
 
 .detail-expand-open {
   grid-template-rows: 1fr;
+}
+
+/* ─── Section dividers: soft gradient instead of hard border ─── */
+section + section {
+  border-image: linear-gradient(
+    90deg,
+    transparent,
+    hsla(215, 14%, 24%, 0.6) 20%,
+    hsla(215, 14%, 24%, 0.6) 80%,
+    transparent
+  ) 1;
 }
