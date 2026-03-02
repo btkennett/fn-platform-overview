@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 const NAV_LINKS = [
   { href: "#the-stack", label: "The Stack" },
   { href: "#compass", label: "Compass" },
@@ -15,18 +19,60 @@ const APP_LINKS = {
   fnDocs: "https://fn-docs.vercel.app",
 };
 
-/* ─── Feature Card ──────────────────────────────── */
-function FeatureCard({ icon, title, description }: { icon: string; title: string; description: string }) {
+/* ─── Feature Card (expandable accordion) ──── */
+function FeatureCard({
+  icon,
+  title,
+  description,
+  details,
+}: {
+  icon: string;
+  title: string;
+  description: string;
+  details?: string[];
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const hasDetails = details && details.length > 0;
+
   return (
-    <div className="card-base card-hover group">
-      <div className="text-2xl mb-3">{icon}</div>
-      <h4 className="text-sm font-semibold text-foreground mb-1">{title}</h4>
-      <p className="text-sm text-muted-foreground leading-relaxed m-0">{description}</p>
+    <div
+      className={`card-base group transition-all duration-300 ${hasDetails ? "cursor-pointer card-hover" : ""}`}
+      onClick={hasDetails ? () => setExpanded(!expanded) : undefined}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex-1">
+          <div className="text-2xl mb-3">{icon}</div>
+          <h4 className="text-sm font-semibold text-foreground mb-1">{title}</h4>
+          <p className="text-sm text-muted-foreground leading-relaxed m-0">{description}</p>
+        </div>
+        {hasDetails && (
+          <span
+            className={`text-muted-foreground text-xs mt-1 transition-transform duration-300 flex-shrink-0 ${expanded ? "rotate-180" : ""}`}
+            aria-hidden
+          >
+            ▾
+          </span>
+        )}
+      </div>
+      {hasDetails && (
+        <div
+          className={`detail-expand ${expanded ? "detail-expand-open" : ""}`}
+        >
+          <div className="pt-3 mt-3 border-t border-card-border space-y-2">
+            {details.map((detail, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <span className="text-primary mt-0.5 flex-shrink-0 text-xs">●</span>
+                <span className="text-sm text-muted-foreground leading-relaxed">{detail}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-/* ─── Value Card ────────────────────────────────── */
+/* ─── Value Card ────────────────────────────── */
 function ValueCard({ title, description }: { title: string; description: string }) {
   return (
     <div className="card-base card-hover relative overflow-hidden">
@@ -37,7 +83,7 @@ function ValueCard({ title, description }: { title: string; description: string 
   );
 }
 
-/* ─── App Section ───────────────────────────────── */
+/* ─── App Section ───────────────────────────── */
 function AppSection({
   id,
   name,
@@ -51,7 +97,7 @@ function AppSection({
   name: string;
   tagline: string;
   pitch: string;
-  features: { icon: string; title: string; description: string }[];
+  features: { icon: string; title: string; description: string; details?: string[] }[];
   appUrl: string;
   children?: React.ReactNode;
 }) {
@@ -82,7 +128,7 @@ function AppSection({
   );
 }
 
-/* ─── Flow Step ─────────────────────────────────── */
+/* ─── Flow Step ─────────────────────────────── */
 function FlowStep({ from, to, description }: { from: string; to: string; description: string }) {
   return (
     <div className="flex items-start gap-4 py-4">
@@ -100,6 +146,257 @@ function FlowStep({ from, to, description }: { from: string; to: string; descrip
   );
 }
 
+/* ═══ FEATURE DETAIL DATA ═══════════════════════ */
+
+const COMPASS_FEATURES: { icon: string; title: string; description: string; details: string[] }[] = [
+  {
+    icon: "🔍",
+    title: "AI-Powered Discovery & Research",
+    description: "Prospect research, competitive analysis, and market intelligence powered by AI.",
+    details: [
+      "Gemini 2.0 Flash profiles any business from just a name and city — category, services, target customer, and 5-7 hyper-local competitors within 10 miles",
+      "Each competitor gets a threat score (0-100) weighing distance, reviews, digital presence, and market positioning (Budget → Luxury)",
+      "Digital maturity scoring crawls the prospect's site for GA4, GTM, Meta Pixel, Google Ads, TikTok — produces a 0-100 score with specific gap analysis",
+      "DataForSEO + Exa.ai layer live SERP and paid search signals on top of AI analysis",
+    ],
+  },
+  {
+    icon: "📋",
+    title: "Media Plan Builder",
+    description: "Build plans from the product catalog with governed rates and real-time availability.",
+    details: [
+      "Generates three statistically distinct plans (A/B/C) using GPT-4o — verified via Jensen-Shannon distance calculation, auto-repaired if too similar",
+      "Every allocation references validated products from the live catalog (up to 80 products with KPIs and pricing injected into the prompt)",
+      "Rate governance enforces margin floors automatically via a four-tier hierarchy (product → category → family → global)",
+      "SLA gates block orders if flights are too close — auto-creates exception tickets with escalation levels",
+    ],
+  },
+  {
+    icon: "📊",
+    title: "Proposal & Deck Generation",
+    description: "Generate client-ready proposals and presentations directly from plan and order data.",
+    details: [
+      "Product-driven slide assembly from a template registry — required slides auto-inject, product slides group by family with dividers",
+      "All content pre-populated from plan data and CRM context (client name, objectives, investment, rep contact info)",
+      "RFP parsing and auto-response: upload an RFP, get a structured response mapped to specific product recommendations",
+      "Final decks rendered to PDF, stored in R2, delivered via time-limited presigned URLs",
+    ],
+  },
+  {
+    icon: "📦",
+    title: "Order Management & Tracking",
+    description: "Full order lifecycle with defined statuses, line items, and fulfillment visibility.",
+    details: [
+      "Formal state machine: draft → pending_approval → approved → sent → active → completed — every transition runs validation gates",
+      'On "approved": tentative inventory holds auto-confirm, locking calendar-based products',
+      'On "sent": six systems fire simultaneously — HubSpot line items, fulfillment tickets, creative briefs to Forge, deal stage sync, Flux events, and Datasys campaign provisioning',
+      "Optimistic concurrency prevents double-transitions; amendments create versioned history",
+    ],
+  },
+  {
+    icon: "🏷️",
+    title: "Product Catalog & Rate Governance",
+    description: "Centralized catalog with rate cards, exceptions, and approval workflows.",
+    details: [
+      "Rate exception engine evaluates every deviation against four-tier thresholds — within tolerance auto-approves, larger deviations route to L0/L1/L2 escalation",
+      "Minimum margin floors reject pricing that would breach profitability before it reaches a rep",
+      "Catalog syncs with HubSpot products — rates, KPIs, and targeting constraints live in one place",
+    ],
+  },
+  {
+    icon: "🔗",
+    title: "HubSpot Deal & Fulfillment Sync",
+    description: "Bidirectional sync with HubSpot deals, contacts, and fulfillment pipeline tickets.",
+    details: [
+      "Trigger.dev task runs in isolated cloud environment — pre-fetches full order payload (metadata, line items, rates, margins, targeting, Datasys IDs)",
+      "Deal stage auto-progresses to mirror Compass order status (draft → appointmentscheduled, sent → presentationscheduled, completed → closedwon)",
+      "Timeline events log every action to the CRM record — status changes, hold confirmations, rate exceptions",
+      "Sync health monitoring tracks error rates by operation type, fires Slack alerts when thresholds exceed",
+    ],
+  },
+];
+
+const FLUX_FEATURES: { icon: string; title: string; description: string; details: string[] }[] = [
+  {
+    icon: "📊",
+    title: "Fulfillment Command Center",
+    description: "Kanban board with SLA tracking, health scoring, and pipeline summary.",
+    details: [
+      "Composite health score (0-100) across five weighted factors: SLA compliance (30 pts), timeline alignment (25 pts), creative readiness (20 pts), change request impact (15 pts), and stage velocity (10 pts)",
+      "SLA tracking uses business days with per-project profile overrides — four-level resolution chain (ticket → project → org → fallback)",
+      "Timeline alignment checks whether a campaign's stage matches its launch proximity — catches slow-movers before they miss launch, not after",
+      'Claude AI generates actionable health summaries on at-risk tickets ("Creative pending 6 days, campaign launches Thursday — escalate now")',
+    ],
+  },
+  {
+    icon: "📈",
+    title: "Sales Forecasting & Deal Confidence",
+    description: "AI-scored deal confidence and pipeline views from HubSpot activity data.",
+    details: [
+      "Six-bucket deterministic scoring engine (0-100): HubSpot stage probability, activity recency, Compass order linkage, deal velocity, temporal pressure, and rep historical win rate",
+      'Every point is auditable with a human-readable reason ("Active 3d ago (+18)", "Pending rate approvals: 2 (-4)")',
+      "AE close rates computed from 12-month actuals across four deal-size tiers — with statistical fallback chain so large-deal reps aren't penalized by small-deal rates",
+      "Scores write back to HubSpot as custom properties; weekly snapshots enable accuracy measurement against actual outcomes",
+    ],
+  },
+  {
+    icon: "🏗️",
+    title: "Project Dashboards",
+    description: "HubSpot companies as projects — tasks, deals, fulfillment, and activity in one view.",
+    details: [
+      "HubSpot companies map to projects via bidirectional sync — parent/child hierarchy traversed with recursive CTEs (up to 10 levels)",
+      "Triage scoring surfaces prioritized action queues: critical alerts (130 pts), overdue tasks (52 pts), blocked tasks (38 pts) — sorted by urgency, not alphabet",
+      "All aggregates fetched in a single parallel batch (7 concurrent queries), not N+1 — scales to hundreds of projects",
+      "Data completeness badges flag gaps that could cause sync errors, with specific missing-field reasons",
+    ],
+  },
+  {
+    icon: "📡",
+    title: "PR Sentinel",
+    description: "Automated media monitoring with severity routing, incident management, and journalist lookup.",
+    details: [
+      "Trigify webhook integration monitors LinkedIn, X/Twitter, Reddit, YouTube, Instagram, TikTok, and Threads",
+      "Claude Haiku classifies every mention: severity (routine → crisis), rationale, suggested action, and sentiment score",
+      "Keyword role tagging (brand vs. competitor) enables Share of Voice calculation in digests",
+      "Message pull-through scoring measures whether approved brand narratives appear in coverage — reported as percentage per narrative",
+      "Incident lifecycle (new → investigating → responding → resolved → closed) with full activity trail, task checklists, and owner assignment",
+    ],
+  },
+  {
+    icon: "✅",
+    title: "Task Boards & Morning Standups",
+    description: "Project-centric Kanban task boards synced from HubSpot with standup summaries.",
+    details: [
+      "Personalized Slack DMs at 9 AM ET — five signal categories: launching campaigns, pending creative, active change requests, overdue tasks, and SLA breaches",
+      "Subscription expansion traverses project hierarchy automatically — subscribe to a parent company, get alerts for all sub-brands",
+      'Only sends if there\'s something to report — zero "all clear" spam',
+      "Pending creative items include wait-time duration; change requests show type (cancel, pause, budget, date extension)",
+    ],
+  },
+  {
+    icon: "🔄",
+    title: "Compass & Forge Integration",
+    description: "Order events from Compass and creative outcomes from Forge flow in automatically.",
+    details: [
+      "Order events from Compass and creative outcomes from Forge flow in automatically via HMAC-signed event bus",
+      "Fulfillment tickets created by Compass appear on the Flux board with health scoring within seconds",
+      "Creative approval in Forge advances HubSpot tickets — Flux reflects the new stage instantly",
+    ],
+  },
+];
+
+const FORGE_FEATURES: { icon: string; title: string; description: string; details: string[] }[] = [
+  {
+    icon: "🤖",
+    title: "AI Compliance Analysis",
+    description: "3-tier, policy-based analysis — low-risk gets lighter review, high-risk gets deeper scrutiny.",
+    details: [
+      "Risk-scored routing to three models automatically: GPT-4.1-mini (low risk, fast screening), GPT-4.1 (standard with image support), GPT-5.1 (high risk — political, cannabis, healthcare claims — with extended reasoning)",
+      "RAG-augmented policy retrieval: submission text embedded and matched against chunked publisher policies, MN statutes, FTC regulations — top 7 policy chunks injected verbatim",
+      'Per-violation confidence scores with specific policy references ("FTC 16 CFR 255.5", "Minn. Stat. 325F.67")',
+      "Claim extraction identifies every factual/regulated claim, categorizes it, and flags substantiation requirements",
+      "Gemini 2.0 Flash performs visual QA on creative assets — CTA prominence, text density, accessibility, brand sentiment",
+    ],
+  },
+  {
+    icon: "👥",
+    title: "Dual Review & Legal Escalation",
+    description: "High-risk submissions require two reviewers. Legal escalation with recorded outcomes.",
+    details: [
+      "Political ads, MN Rising, and Obituaries automatically trigger mandatory dual review — reviewer independence enforced at the API level",
+      "Conflict resolution queue for reviewer disagreements — admin issues binding decision with full audit trail",
+      "Legal lock restricts decision authority to Legal Approvers only — standard reviewers get a 403",
+      "Calibration mode: admins flag submissions with expected outcomes, reviewers decide blind, system scores consistency",
+    ],
+  },
+  {
+    icon: "📥",
+    title: "Submission Intake",
+    description: "Accept submissions via web form, email, or ad tag — all normalized into one review queue.",
+    details: [
+      "Three ingestion paths (web form, email, fulfillment bridge) converge to a single normalized submission — reviewers see one queue",
+      "AI creative brief auto-generates on every intake: campaign goal, audience, key message, mandatories",
+      "Brand profile auto-linking from HubSpot context — subsidiaries correctly attributed to parent brand",
+      "Idempotent event processing prevents duplicate submissions from webhook replays",
+    ],
+  },
+  {
+    icon: "📝",
+    title: "Creative Briefs from Context",
+    description: "Auto-generated briefs from fulfillment context so reviewers have full background.",
+    details: [
+      "Auto-generated from fulfillment ticket context — campaign type, product, flight dates, special instructions",
+      "AI enhances (not replaces) submitter-provided fields",
+      "Slack notification fires when brief is ready — creative team has structured context before opening the submission",
+    ],
+  },
+  {
+    icon: "📜",
+    title: "Affidavit Generation & Audit Trail",
+    description: "Formal approval records with dated affidavits and complete activity logging.",
+    details: [
+      "Template-driven, publication-specific rendering: Star Tribune (ROP/display), generic newspaper, generic legal, MN Rising",
+      "Automatic publication date extraction from legal notice text — no manual date entry for text-based templates",
+      "Digitized signatures from R2 storage with 1-hour presigned URLs embedded in PDF",
+      "12-step validation pipeline runs before any PDF is produced — no partial state on failure",
+    ],
+  },
+  {
+    icon: "🌉",
+    title: "Fulfillment Bridge",
+    description: "Creative needed → submission created → approved → HubSpot ticket advances automatically.",
+    details: [
+      'HMAC-signed event bus: Flux emits "creative needed" → Forge auto-creates submission stub — creative queue self-populates',
+      "On approval, Forge advances HubSpot ticket from pending_creative → pending_fulfillment and sets creative_provided = CAMERA_READY",
+      "Every status change emits structured events to Flux for activity feeds and health scoring",
+      "HubSpot deal stage reflects creative status in real time — sales reps see it without Forge access",
+    ],
+  },
+];
+
+const DOCS_FEATURES: { icon: string; title: string; description: string; details: string[] }[] = [
+  {
+    icon: "🔎",
+    title: "Semantic Search",
+    description: "Find content by meaning, not just keywords. Ask a question, get relevant documents.",
+    details: [
+      "Vector embeddings turn documents into searchable meaning — \"what's our policy on political advertising?\" finds the right doc even if those exact words aren't in it",
+      "Hybrid search combines semantic similarity with keyword matching for best-of-both precision",
+      "Results ranked by relevance with highlighted matching passages",
+    ],
+  },
+  {
+    icon: "💬",
+    title: "AI Chat Over Documents",
+    description: "Ask questions in natural language and get answers with citations from your document corpus.",
+    details: [
+      "Ask questions in natural language — get answers with citations pointing to specific documents and passages",
+      "Conversation context maintained across follow-up questions",
+      "Grounded in your actual document corpus, not general AI knowledge",
+    ],
+  },
+  {
+    icon: "🔒",
+    title: "Access Control & Lifecycle",
+    description: "Groups, expiration, and versioning keep content current and access controlled.",
+    details: [
+      "Group-based access control determines who can see which documents",
+      "Lifecycle management: expiration dates, version tracking, update notifications",
+      "Ensures policies stay current and access stays controlled",
+    ],
+  },
+  {
+    icon: "📚",
+    title: "Policy & Reference Hub",
+    description: "Central home for policies, guides, and reference material — supports Forge compliance reviews.",
+    details: [
+      "Central home for advertising policies, legal guidelines, and reference material",
+      "Feeds Forge's compliance review — policies referenced in AI analysis come from here",
+      "Searchable by any team: legal, compliance, operations, sales",
+    ],
+  },
+];
+
 /* ═══ PAGE ═══════════════════════════════════════ */
 export default function PlatformOverviewPage() {
   return (
@@ -107,9 +404,16 @@ export default function PlatformOverviewPage() {
       {/* ─── Sticky Nav ─────────────────────────── */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="section-container flex items-center justify-between h-14">
-          <span className="text-sm font-semibold tracking-tight text-foreground">
-            Foundry North
-          </span>
+          <div className="flex items-center gap-2">
+            <img
+              src="/foundry-north-logo.png"
+              alt="Foundry North"
+              className="h-7 w-auto brightness-0 invert"
+            />
+            <span className="text-sm font-semibold tracking-tight text-foreground">
+              Foundry North
+            </span>
+          </div>
           <div className="hidden md:flex items-center gap-6">
             {NAV_LINKS.map((link) => (
               <a
@@ -131,6 +435,11 @@ export default function PlatformOverviewPage() {
           <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/10 blur-[120px] rounded-full" />
           <div className="section-container relative">
             <div className="max-w-3xl">
+              <img
+                src="/foundry-north-logo.png"
+                alt=""
+                className="h-12 w-auto brightness-0 invert mb-6"
+              />
               <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight mb-6">
                 The platform behind Star Tribune&apos;s most powerful media operation
               </h1>
@@ -250,14 +559,7 @@ export default function PlatformOverviewPage() {
           tagline="Where media plans become revenue"
           pitch="The primary application for media planning and order management. From AI-powered research to proposal generation to fulfillment sync — Compass turns strategy into executed orders with full HubSpot integration."
           appUrl={APP_LINKS.compass}
-          features={[
-            { icon: "🔍", title: "AI-Powered Discovery & Research", description: "Prospect research, competitive analysis, and market intelligence powered by AI." },
-            { icon: "📋", title: "Media Plan Builder", description: "Build plans from the product catalog with governed rates and real-time availability." },
-            { icon: "📊", title: "Proposal & Deck Generation", description: "Generate client-ready proposals and presentations directly from plan and order data." },
-            { icon: "📦", title: "Order Management & Tracking", description: "Full order lifecycle with defined statuses, line items, and fulfillment visibility." },
-            { icon: "🏷️", title: "Product Catalog & Rate Governance", description: "Centralized catalog with rate cards, exceptions, and approval workflows." },
-            { icon: "🔗", title: "HubSpot Deal & Fulfillment Sync", description: "Bidirectional sync with HubSpot deals, contacts, and fulfillment pipeline tickets." },
-          ]}
+          features={COMPASS_FEATURES}
         />
 
         {/* ─── Flux ───────────────────────────────── */}
@@ -267,14 +569,7 @@ export default function PlatformOverviewPage() {
           tagline="See everything. Miss nothing."
           pitch="The orchestration and visibility layer that brings HubSpot, Compass, and Forge together. Teams see one picture — projects, fulfillment, tasks, health, and forecasting — without switching between tools."
           appUrl={APP_LINKS.flux}
-          features={[
-            { icon: "📊", title: "Fulfillment Command Center", description: "Kanban board with SLA tracking, health scoring, and pipeline summary." },
-            { icon: "📈", title: "Sales Forecasting & Deal Confidence", description: "AI-scored deal confidence and pipeline views from HubSpot activity data." },
-            { icon: "🏗️", title: "Project Dashboards", description: "HubSpot companies as projects — tasks, deals, fulfillment, and activity in one view." },
-            { icon: "📡", title: "PR Sentinel", description: "Automated media monitoring with severity routing, incident management, and journalist lookup." },
-            { icon: "✅", title: "Task Boards & Morning Standups", description: "Project-centric Kanban task boards synced from HubSpot with standup summaries." },
-            { icon: "🔄", title: "Compass & Forge Integration", description: "Order events from Compass and creative outcomes from Forge flow in automatically." },
-          ]}
+          features={FLUX_FEATURES}
         >
           {/* PR Sentinel Spotlight */}
           <div className="sentinel-glow card-base mb-8 relative overflow-hidden">
@@ -313,14 +608,7 @@ export default function PlatformOverviewPage() {
           tagline="Creative compliance at the speed of business"
           pitch="Every ad, every concept, every submission — reviewed against policy, tracked through approval, and linked to fulfillment. AI handles the first pass. Humans make the call. The audit trail captures everything."
           appUrl={APP_LINKS.forge}
-          features={[
-            { icon: "🤖", title: "AI Compliance Analysis", description: "3-tier, policy-based analysis — low-risk gets lighter review, high-risk gets deeper scrutiny." },
-            { icon: "👥", title: "Dual Review & Legal Escalation", description: "High-risk submissions require two reviewers. Legal escalation with recorded outcomes." },
-            { icon: "📥", title: "Submission Intake", description: "Accept submissions via web form, email, or ad tag — all normalized into one review queue." },
-            { icon: "📝", title: "Creative Briefs from Context", description: "Auto-generated briefs from fulfillment context so reviewers have full background." },
-            { icon: "📜", title: "Affidavit Generation & Audit Trail", description: "Formal approval records with dated affidavits and complete activity logging." },
-            { icon: "🌉", title: "Fulfillment Bridge", description: "Creative needed → submission created → approved → HubSpot ticket advances automatically." },
-          ]}
+          features={FORGE_FEATURES}
         />
 
         {/* ─── Document Center ────────────────────── */}
@@ -330,12 +618,7 @@ export default function PlatformOverviewPage() {
           tagline="Every policy, every document, instantly searchable"
           pitch="The internal knowledge hub for Star Tribune. Upload policies, reference docs, and guides — then find answers instantly with semantic search and AI chat, not keyword guessing."
           appUrl={APP_LINKS.docs}
-          features={[
-            { icon: "🔎", title: "Semantic Search", description: "Find content by meaning, not just keywords. Ask a question, get relevant documents." },
-            { icon: "💬", title: "AI Chat Over Documents", description: "Ask questions in natural language and get answers with citations from your document corpus." },
-            { icon: "🔒", title: "Access Control & Lifecycle", description: "Groups, expiration, and versioning keep content current and access controlled." },
-            { icon: "📚", title: "Policy & Reference Hub", description: "Central home for policies, guides, and reference material — supports Forge compliance reviews." },
-          ]}
+          features={DOCS_FEATURES}
         />
 
         {/* ─── How It All Connects ────────────────── */}
@@ -375,11 +658,18 @@ export default function PlatformOverviewPage() {
         <footer className="border-t border-border py-12">
           <div className="section-container">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-              <div>
-                <span className="text-sm font-semibold text-foreground">Built by Foundry North</span>
-                <p className="text-xs text-muted-foreground mt-1 mb-0">
-                  The platform behind Star Tribune&apos;s media operation.
-                </p>
+              <div className="flex items-center gap-3">
+                <img
+                  src="/foundry-north-logo.png"
+                  alt=""
+                  className="h-8 w-auto brightness-0 invert"
+                />
+                <div>
+                  <span className="text-sm font-semibold text-foreground">Built by Foundry North</span>
+                  <p className="text-xs text-muted-foreground mt-1 mb-0">
+                    The platform behind Star Tribune&apos;s media operation.
+                  </p>
+                </div>
               </div>
               <div className="flex flex-wrap gap-4">
                 {[

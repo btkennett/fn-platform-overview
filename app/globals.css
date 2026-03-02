@@ -70,3 +70,18 @@ body {
 @utility no-underline {
   text-decoration: none;
 }
+
+/* ─── Expand/Collapse Animation ─── */
+.detail-expand {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+
+.detail-expand > div {
+  overflow: hidden;
+}
+
+.detail-expand-open {
+  grid-template-rows: 1fr;
+}
